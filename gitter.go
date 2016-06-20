@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"database/sql"
 	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
-	"net/http"
 )
 
 func main() {
@@ -21,9 +22,9 @@ func main() {
 		fmt.Print(err.Error())
 	}
 	type Person struct {
-		Id         int    `db: id`
-		First_Name string `db: first_name`
-		Last_Name  string `db: last_name`
+		Id         int
+		First_Name string
+		Last_Name  string
 	}
 	router := gin.Default()
 
