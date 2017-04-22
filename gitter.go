@@ -103,7 +103,7 @@ func main() {
 	})
 
 	// PUT - update a person details
-	router.PUT("/person", func(c *gin.Context) {
+	router.PUT("/person/:id", func(c *gin.Context) {
 		var buffer bytes.Buffer
 		id := c.Query("id")
 		first_name := c.PostForm("first_name")
@@ -129,7 +129,7 @@ func main() {
 	})
 
 	// Delete resources
-	router.DELETE("/person", func(c *gin.Context) {
+	router.DELETE("/person/:id", func(c *gin.Context) {
 		id := c.Query("id")
 		stmt, err := db.Prepare("delete from person where id= ?;")
 		if err != nil {
