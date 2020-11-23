@@ -20,6 +20,7 @@ func main() {
 	err = db.Ping()
 	if err != nil {
 		fmt.Print(err.Error())
+		panic(err) //return if there is an error while ping to the database
 	}
 	type Person struct {
 		Id         int
@@ -60,7 +61,8 @@ func main() {
 		)
 		rows, err := db.Query("select id, first_name, last_name from person;")
 		if err != nil {
-			fmt.Print(err.Error())
+			c.JSON(http.StatusInternalServerError, err)
+			return
 		}
 		for rows.Next() {
 			err = rows.Scan(&person.Id, &person.First_Name, &person.Last_Name)
@@ -83,12 +85,14 @@ func main() {
 		last_name := c.PostForm("last_name")
 		stmt, err := db.Prepare("insert into person (first_name, last_name) values(?,?);")
 		if err != nil {
-			fmt.Print(err.Error())
+			c.JSON(http.StatusInternalServerError, err)
+			return
 		}
 		_, err = stmt.Exec(first_name, last_name)
 
 		if err != nil {
-			fmt.Print(err.Error())
+			c.JSON(http.StatusBadRequest, err)
+			return
 		}
 
 		// Fastest way to append strings
@@ -110,11 +114,13 @@ func main() {
 		last_name := c.PostForm("last_name")
 		stmt, err := db.Prepare("update person set first_name= ?, last_name= ? where id= ?;")
 		if err != nil {
-			fmt.Print(err.Error())
+			c.JSON(http.StatusInternalServerError, err)
+			return
 		}
 		_, err = stmt.Exec(first_name, last_name, id)
 		if err != nil {
-			fmt.Print(err.Error())
+			c.JSON(http.StatusBadRequest, err)
+			return
 		}
 
 		// Fastest way to append strings
@@ -133,11 +139,13 @@ func main() {
 		id := c.Query("id")
 		stmt, err := db.Prepare("delete from person where id= ?;")
 		if err != nil {
-			fmt.Print(err.Error())
+			c.JSON(http.StatusInternalServerError, err)
+			return
 		}
 		_, err = stmt.Exec(id)
 		if err != nil {
-			fmt.Print(err.Error())
+			c.JSON(http.StatusBadRequest, err)
+			return
 		}
 		c.JSON(http.StatusOK, gin.H{
 			"message": fmt.Sprintf("Successfully deleted user: %s", id),
